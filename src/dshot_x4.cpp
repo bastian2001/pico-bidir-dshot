@@ -2,24 +2,52 @@
 #include "hardware/clocks.h"
 #include "pio/dshotx4.pio.h"
 
+#define DBG defined(DSHOT_DEBUG)
+
 vector<DShotX4 *> DShotX4::instances;
 
 DShotX4::DShotX4(uint8_t pinBase, uint8_t pinCount, uint32_t speed, PIO pio, int8_t sm) {
+#if DBG
+	const char pioStr[32] = "";
+	if (pio == pio0) {
+		strcpy(pioStr, "pio0");
+	} else if (pio == pio1) {
+		strcpy(pioStr, "pio1");
+	} else {
+		sprintf(pioStr, "%p (invalid PIO)", pio);
+	}
+#endif
+
 	// ensure valid parameters
 	if (sm >= 4 || sm < -1 || pinBase > 29 || pinCount > 4 || !pinCount || speed < 150 || speed > 4800 || (pio != pio0 && pio != pio1)) {
+#if DBG
+		Serial.printf("DShotX4: Invalid parameters: Check that sm is -1...3, pinBase is 0...29, pinCount is 1...4, speed is 150...4800 and pio is pio0 or pio1. You supplied: sm=%d, pinBase=%d, pinCount=%d, speed=%d, pio=%s\n", sm, pinBase, pinCount, speed, pioStr);
+#endif
 		iError = true;
 		return;
 	}
+
+#if DBG
+	if (speed != 150 && speed != 300 && speed != 600 && speed != 1200 && speed != 2400) {
+		Serial.printf("DShotX4: Unofficial speed: %d. Unless you know what you are doing, please select DShot 150, 300, 600, 1200 or 2400.\n", speed);
+	}
+#endif
 
 	// Check if SM is claimed, then claim it
 	if (sm == -1) {
 		sm = pio_claim_unused_sm(pio, false);
 		if (sm < 0) {
+#if DBG
+			Serial.printf("DShotX4: No free state machines available, pio=%s\n", pioStr);
+#endif
 			iError = true;
 			return;
 		}
 	} else {
 		if (pio_sm_is_claimed(pio, sm)) {
+#if DBG
+			Serial.printf("DShotX4: SM provided but already claimed, pio=%s, sm=%d", pioStr, sm);
+#endif
 			iError = true;
 			return;
 		}
@@ -39,6 +67,9 @@ DShotX4::DShotX4(uint8_t pinBase, uint8_t pinCount, uint32_t speed, PIO pio, int
 		if (pio_can_add_program(pio, &dshotx4_program)) {
 			this->offset = pio_add_program(pio, &dshotx4_program);
 		} else {
+#if DBG
+			Serial.printf("DShotX4: No space for program on %s", pioStr);
+#endif
 			iError = true;
 			pio_sm_unclaim(pio, sm);
 			return;
@@ -47,7 +78,7 @@ DShotX4::DShotX4(uint8_t pinBase, uint8_t pinCount, uint32_t speed, PIO pio, int
 		this->offset = o;
 	}
 
-	// set up GPIO
+	// set up GPIOs
 	for (int i = 0; i < pinCount; i++) {
 		uint8_t pin = pinBase + i;
 		pio_gpio_init(pio, pin);

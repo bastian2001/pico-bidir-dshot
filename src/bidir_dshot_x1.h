@@ -16,6 +16,11 @@ enum class BidirDshotTelemetryType : uint8_t {
 	DEBUG_FRAME_2,
 };
 
+#define ESC_STATUS_MAX_STRESS_MASK 0b00001111
+#define ESC_STATUS_ERROR_MASK 0b00100000
+#define ESC_STATUS_WARNING_MASK 0b01000000
+#define ESC_STATUS_ALERT_MASK 0b10000000
+
 class BidirDshotX1 {
 public:
 	static vector<BidirDshotX1 *> instances;
@@ -77,7 +82,7 @@ public:
 	/**
 	 * @brief Get the current eRPM, provided the telemetry packet is valid and of type ERPM
 	 *
-	 * Leaves the erpm pointer unchanged if no packet is available, the checksum is invalid or the packet type is not ERPM. Safe to call even if no packet is available.
+	 * Leaves the erpm pointer unchanged if no packet is available, the checksum is invalid or the packet type is not ERPM. No-op (does not stall) if no packet is available.
 	 *
 	 * @param erpm pointer to a uint32_t to store the erpm. Must be a valid pointer, not nullptr.
 	 * @return BidirDshotTelemetryType ::ERPM, ::OTHER_VALUE, ::NO_PACKET or ::CHECKSUM_ERROR
@@ -87,11 +92,11 @@ public:
 	/**
 	 * @brief Get the telemetry packet
 	 *
-	 * As long as a telemetry packet is available and valid, this function will overwrite the contents of the value pointer. Safe to call even if no packet is available. Not all types will be sent by all ESCs.
+	 * As long as a telemetry packet is available and valid, this function will overwrite the contents of the value pointer. No-op (does not stall) if no packet is available. Not all types will be sent by all ESCs.
 	 *
 	 * If the packet is of type ERPM, the value will be the decoded eRPM. TEMPERATURE in °C. VOLTAGE in 250mV steps (e.g. 69 = 17.25 => divide by 4). CURRENT in 1A steps. DEBUG_FRAME_1 and DEBUG_FRAME_2 are the raw 8 bit values. STRESS from 0-255.
 	 *
-	 * STATUS frame: Bit[7] = alert event, Bit[6] = warning event, Bit[5] = error event, Bit[3-0] - Max. stress level [0-15]. Events may be defined differently by each ESC firmware.
+	 * STATUS frame: Bit[7] = alert event, Bit[6] = warning event, Bit[5] = error event, Bit[3-0] - Max. stress level [0-15]. Events may be defined differently by each ESC firmware. Check ESC_STATUS_*_MASK definitions.
 	 *
 	 * @param value pointer to a uint32_t to store the telemetry value. Must be a valid pointer, not nullptr.
 	 * @return BidirDshotTelemetryType, all values except ::OTHER_VALUE may be returned
@@ -101,7 +106,7 @@ public:
 	/**
 	 * @brief Get the raw telemetry packet
 	 *
-	 * As long as a telemetry packet is available and valid, this function will overwrite the contents of the value pointer. Safe to call even if no packet is available.
+	 * As long as a telemetry packet is available and valid, this function will overwrite the contents of the value pointer. No-op (does not stall) if no packet is available.
 	 *
 	 * Reads the raw telemetry packet from the ESC. 12 bits, e.g. in case of ERPM eeem mmmm mmmm (exponent, mantissa).
 	 *
