@@ -15,24 +15,13 @@
 #define dshotx4_wrap_target 0
 #define dshotx4_wrap 3
 
-#define dshotx4_CLKDIV_2400_INT 1
-#define dshotx4_CLKDIV_2400_FRAC 96
-#define dshotx4_CLKDIV_1200_INT 2
-#define dshotx4_CLKDIV_1200_FRAC 192
-#define dshotx4_CLKDIV_600_INT 5
-#define dshotx4_CLKDIV_600_FRAC 128
-#define dshotx4_CLKDIV_300_INT 11
-#define dshotx4_CLKDIV_300_FRAC 0
-#define dshotx4_CLKDIV_150_INT 22
-#define dshotx4_CLKDIV_150_FRAC 0
-
-static const u16 dshotx4_program_instructions[] = {
+static const uint16_t dshotx4_program_instructions[] = {
 	//     .wrap_target
 	0x80e0, //  0: pull   ifempty block
 	0xee0f, //  1: set    pins, 15               [14]
 	0x6e04, //  2: out    pins, 4                [14]
 	0xe800, //  3: set    pins, 0                [8]
-			//     .wrap
+	//     .wrap
 };
 
 #if !PICO_NO_HARDWARE
@@ -42,8 +31,7 @@ static const struct pio_program dshotx4_program = {
 	.origin = -1,
 };
 
-static inline pio_sm_config dshotx4_program_get_default_config(uint offset)
-{
+static inline pio_sm_config dshotx4_program_get_default_config(uint offset) {
 	pio_sm_config c = pio_get_default_sm_config();
 	sm_config_set_wrap(&c, offset + dshotx4_wrap_target, offset + dshotx4_wrap);
 	return c;

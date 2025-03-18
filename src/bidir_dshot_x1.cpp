@@ -45,7 +45,6 @@ BidirDshotX1::BidirDshotX1(uint8_t pin, uint32_t speed, PIO pio, int8_t sm) {
 	}
 	if (o == 255) {
 		if (pio_can_add_program(pio, &bidir_dshot_x1_program)) {
-			pio_add_program(pio, &bidir_dshot_x1_program);
 			this->offset = pio_add_program(pio, &bidir_dshot_x1_program);
 		} else {
 			iError = true;
@@ -74,6 +73,13 @@ BidirDshotX1::BidirDshotX1(uint8_t pin, uint32_t speed, PIO pio, int8_t sm) {
 	uint32_t targetClock = 12000000 * speed / 300; // 12 MHz for DShot300
 	uint32_t cpuClock = clock_get_hz(clk_sys);
 	pio_sm_set_clkdiv(pio, this->sm, (float)cpuClock / targetClock);
+
+	// add this instance to the list of instances
+	this->pio = pio;
+	this->pin = pin;
+	this->speed = speed;
+	this->iError = false;
+	BidirDshotX1::instances.push_back(this);
 }
 
 BidirDshotX1::~BidirDshotX1() {
@@ -172,28 +178,18 @@ BidirDshotTelemetryType BidirDshotX1::getTelemetryErpm(uint32_t *value) {
 BidirDshotTelemetryType BidirDshotX1::getTelemetryPacket(uint32_t *value) {
 	uint32_t raw;
 	BidirDshotTelemetryType ret = this->getTelemetryRaw(&raw);
-	if (ret > BidirDshotTelemetryType::NO_PACKET) {
-		return BidirDshotTelemetryType::OTHER_VALUE;
-	}
-	switch (ret) {
-	case BidirDshotTelemetryType::ERPM:
+
+	if (ret == BidirDshotTelemetryType::ERPM) {
 		raw = (raw & 0x1FF) << (raw >> 9); // eeem mmmm mmmm
 		if (!raw) {
 			return BidirDshotTelemetryType::CHECKSUM_ERROR; // not quite right, but close enough
 		}
 		raw = (60000000 + 50 * raw) / raw;
 		*value = raw;
-		break;
-	case BidirDshotTelemetryType::TEMPERATURE:
-	case BidirDshotTelemetryType::VOLTAGE:
-	case BidirDshotTelemetryType::CURRENT:
-	case BidirDshotTelemetryType::STRESS:
-	case BidirDshotTelemetryType::STATUS:
-	case BidirDshotTelemetryType::DEBUG_FRAME_1:
-	case BidirDshotTelemetryType::DEBUG_FRAME_2:
+	} else if (ret > BidirDshotTelemetryType::NO_PACKET) {
 		*value = raw & 0xFF;
-		break;
 	}
+	return ret;
 }
 
 BidirDshotTelemetryType BidirDshotX1::getTelemetryRaw(uint32_t *value) {

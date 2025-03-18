@@ -1,24 +1,8 @@
 .program dshotx4
-.define TPUS 6 ;ticks per microsecond at DShot 150 (i.e. MHz at DShot 150)
-.define TT (TPUS * 20 / 3); 40
-.define TL (TPUS * 5 / 2); 15 ticks for long pulse
-.define TS (TT - (2 * TL)); 10 ticks for short pulse
 
 .wrap_target
 pull ifempty block
-set pins, 0b1111 [(TL-1)]
-out pins, 4 [(TL-1)]
-set pins, 0b0000 [(TS-2)]
+set pins, 0b1111 [14]
+out pins, 4 [14]
+set pins, 0b0000 [8]
 .wrap
-
-
-.define public CLKDIV_2400_INT 1
-.define public CLKDIV_2400_FRAC 96
-.define public CLKDIV_1200_INT 2
-.define public CLKDIV_1200_FRAC 192
-.define public CLKDIV_600_INT 5
-.define public CLKDIV_600_FRAC 128
-.define public CLKDIV_300_INT 11
-.define public CLKDIV_300_FRAC 0
-.define public CLKDIV_150_INT 22; will result in 6 MHz, 132/22 = 6 (see TPUS)
-.define public CLKDIV_150_FRAC 0
