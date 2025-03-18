@@ -41,7 +41,7 @@ public:
 	/**
 	 * @brief Send a throttle value to the ESC
 	 *
-	 * UART telemetry request bit IS NOT set (separate wire). Checksum is appended automatically.
+	 * UART telemetry request bit IS NOT set (separate wire). Checksum is appended automatically. Call one of the send functions regularly (usually > 500Hz) to keep the ESC alive.
 	 *
 	 * @param throttle the throttle value, 0-2000
 	 */
@@ -50,7 +50,7 @@ public:
 	/**
 	 * @brief Send a raw packet to the ESC, useful for special commands
 	 *
-	 * UART telemetry request bit IS set (separate wire). See BidirDshotX1::CMD_ commands. Checksum is appended automatically.
+	 * UART telemetry request bit IS set (separate wire). See BidirDshotX1::CMD_ commands. Checksum is appended.automatically. Call one of the send functions regularly (usually > 500Hz) to keep the ESC alive.
 	 *
 	 * @param data the raw data to send, 11 bits, or 0-2047
 	 */
@@ -59,7 +59,7 @@ public:
 	/**
 	 * @brief Send a raw packet to the ESC, useful for special commands
 	 *
-	 * UART telemetry request bit can be set arbitrarily. Checksum is appended automatically.
+	 * UART telemetry request bit can be set arbitrarily. Checksum is appended automatically. Call one of the send functions regularly (usually > 500Hz) to keep the ESC alive.
 	 *
 	 * @param data the raw data to send, 12 bits: xxxx dddd dddd dddt where d is data, t is telemetry request bit and x is ignored
 	 */
