@@ -1,4 +1,4 @@
-# Bidirection DShot library for RP2040 / RP2350
+# Bidirectional DShot library for RP2040 / RP2350
 
 > [!NOTE]
 > This library is still in development and not yet ready for use. Please check in a few days. While the code itself is tested on my FC, refactoring for the library is still ongoing.
