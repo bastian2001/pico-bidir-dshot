@@ -12,8 +12,9 @@
 -   Fast bidirectional communication
     -   Bidirection and normal DShot up to 4800 (tested up to 1200)
     -   Speed only limited by DShot protocol
--   Edge detection with multiple samples per bit
-    -   unaffected by jitter or clock differences between ESC and MCU
+    -   Fully asynchronous: no CPU intervention needed for sending or receiving
+-   14x Oversampling with edge detection
+    -   unaffected by jitter/aliasing or clock differences between ESC and MCU
     -   Low CPU overhead: Edge detection is done on the PIO
 -   Low usage of PIO hardware
     -   bidirectional DShot needs 28 instructions and 1 state machine = 1 ESC => max 8/12 ESCs
@@ -41,7 +42,7 @@ TODO
 
 ## Contributing
 
-If you feel like a feature is missing, feel free to open an issue. I'm happy to help you with any questions you might have.
+If you feel like a feature is missing or something is broken, feel free to open an issue. I'm happy to help you with any questions you might have.
 
 If you have the experience to fix the issue yourself, feel free to open a pull request. I'm happy to review and merge it.
 
