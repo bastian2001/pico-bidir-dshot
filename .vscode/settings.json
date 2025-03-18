@@ -1,0 +1,23 @@
+{
+	"C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: LLVM, UseTab: ForContinuationAndIndentation, AlignTrailingComments: Never, IndentWidth: 4, TabWidth: 4, BreakBeforeBraces: Attach, AllowShortIfStatementsOnASingleLine: true, IndentCaseLabels: false, ColumnLimit: 0, AccessModifierOffset: -4, NamespaceIndentation: All, FixNamespaceComments: false }",
+	"C_Cpp.commentContinuationPatterns": ["/**"],
+	"C_Cpp.doxygen.sectionTags": [
+		"attention",
+		"details",
+		"tparam",
+		"param",
+		"result",
+		"returns",
+		"retval",
+		"exception",
+		"deprecated",
+		"warning",
+		"note"
+	],
+	"editor.wordWrapColumn": 120,
+	"editor.wordWrap": "bounded",
+	"editor.indentSize": "tabSize",
+	"editor.formatOnSave": true,
+	"editor.insertSpaces": false,
+	"editor.detectIndentation": false
+}
