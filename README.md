@@ -10,7 +10,7 @@
     -   low setup and usage complexity
     -   eRPMs are calculated in this library
 -   Fast bidirectional communication
-    -   Bidirection and normal DShot up to 4800 (tested up to 1200)
+    -   Bidirectional and normal DShot up to 4800 (tested up to 1200)
     -   Speed only limited by DShot protocol
     -   Fully asynchronous: no CPU intervention needed for sending or receiving
 -   14x Oversampling with edge detection
