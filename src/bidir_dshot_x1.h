@@ -21,26 +21,27 @@ enum class BidirDshotTelemetryType : uint8_t {
 #define ESC_STATUS_WARNING_MASK 0b01000000
 #define ESC_STATUS_ALERT_MASK 0b10000000
 
-class BidirDshotX1 {
+class BidirDShotX1 {
 public:
-	static vector<BidirDshotX1 *> instances;
+	static vector<BidirDShotX1 *> instances;
 
+	BidirDShotX1() = delete;
 	/**
-	 * @brief Initialize a new BidirDshotX1 instance
+	 * @brief Initialize a new BidirDShotX1 instance
 	 *
 	 * @param pin the ESC pin
 	 * @param speed DShot speed in kBaud, e.g. 600 for DShot600
 	 * @param pio the PIO instance to use, default is pio0
 	 * @param sm the state machine to use, default (-1) is autodetect
 	 */
-	BidirDshotX1(uint8_t pin, uint32_t speed = 600, PIO pio = pio0, int8_t sm = -1);
+	BidirDShotX1(uint8_t pin, uint32_t speed = 600, PIO pio = pio0, int8_t sm = -1);
 
 	/**
-	 * @brief Deinitialize the BidirDshotX1 instance
+	 * @brief Deinitialize the BidirDShotX1 instance
 	 *
 	 * This will stop the state machine and free the pin. If this is the last instance on this PIO block, the PIO programm will be removed.
 	 */
-	~BidirDshotX1();
+	~BidirDShotX1();
 
 	/**
 	 * @brief Send a throttle value to the ESC
@@ -54,7 +55,7 @@ public:
 	/**
 	 * @brief Send a raw packet to the ESC, useful for special commands
 	 *
-	 * UART telemetry request bit IS set (separate wire). See BidirDshotX1::CMD_ commands. Checksum is appended.automatically. Call one of the send functions regularly (usually > 500Hz) to keep the ESC alive.
+	 * UART telemetry request bit IS set (separate wire). See BidirDShotX1::CMD_ commands. Checksum is appended.automatically. Call one of the send functions regularly (usually > 500Hz) to keep the ESC alive.
 	 *
 	 * @param data the raw data to send, 11 bits, or 0-2047
 	 */

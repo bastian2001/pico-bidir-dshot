@@ -11,6 +11,8 @@
 [] Adjust code for RP2350 (more PIOs)
 [] Test on RP2350
 [] Release to Arduino Library Manager
+[] Add more setups (e.g. DShotX1 - more efficient and versatile, DShotX8 - less PIO usage)
+[] Add more features (command queue, sendAll etc.)
 
 ## Features
 

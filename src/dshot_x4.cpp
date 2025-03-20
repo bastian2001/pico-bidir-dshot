@@ -1,14 +1,18 @@
 #include "dshot_x4.h"
+#include "dshot_config.h"
 #include "hardware/clocks.h"
 #include "pio/dshotx4.pio.h"
 
 #define DBG defined(DSHOT_DEBUG)
+#if DBG
+#include "Arduino.h"
+#endif
 
 vector<DShotX4 *> DShotX4::instances;
 
 DShotX4::DShotX4(uint8_t pinBase, uint8_t pinCount, uint32_t speed, PIO pio, int8_t sm) {
 #if DBG
-	const char pioStr[32] = "";
+	char pioStr[32] = "";
 	if (pio == pio0) {
 		strcpy(pioStr, "pio0");
 	} else if (pio == pio1) {
@@ -93,11 +97,9 @@ DShotX4::DShotX4(uint8_t pinBase, uint8_t pinCount, uint32_t speed, PIO pio, int
 	pio_sm_set_consecutive_pindirs(pio, this->sm, pinBase, pinCount, true);
 	pio_sm_init(pio, this->sm, this->offset, &c);
 	pio_sm_set_enabled(pio, this->sm, true);
-	uint32_t targetClock = 12000000 * speed / 300; // 12 MHz for DShot300
+	uint32_t targetClock = 12000000 / 300 * speed; // 12 MHz for DShot300
 	uint32_t cpuClock = clock_get_hz(clk_sys);
 	pio_sm_set_clkdiv(pio, this->sm, (float)cpuClock / targetClock);
-	pio_sm_put(pio, this->sm, 0);
-	pio_sm_put(pio, this->sm, 0);
 
 	// add this instance to the list of instances
 	this->pio = pio;
@@ -153,6 +155,7 @@ void DShotX4::sendThrottles(uint16_t throttles[4]) {
 			throttles[i] = 2000;
 		}
 		if (throttles[i]) throttles[i] += 47;
+		throttles[i] <<= 1;
 	}
 	this->sendRaw12Bit(throttles);
 }

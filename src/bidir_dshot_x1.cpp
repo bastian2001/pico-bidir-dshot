@@ -1,10 +1,14 @@
 #include "bidir_dshot_x1.h"
+#include "dshot_config.h"
 #include "hardware/clocks.h"
 #include "pio/bidir_dshot_x1.pio.h"
 
 #define DBG defined(DSHOT_DEBUG)
+#if DBG
+#include "Arduino.h"
+#endif
 
-vector<BidirDshotX1 *> BidirDshotX1::instances;
+vector<BidirDShotX1 *> BidirDShotX1::instances;
 
 #define iv 0xFFFFFFFF
 const uint32_t escDecodeLut[32] = {
@@ -13,9 +17,9 @@ const uint32_t escDecodeLut[32] = {
 
 const BidirDshotTelemetryType telemetryTypeLut[16] = {BidirDshotTelemetryType::ERPM, BidirDshotTelemetryType::ERPM, BidirDshotTelemetryType::TEMPERATURE, BidirDshotTelemetryType::ERPM, BidirDshotTelemetryType::VOLTAGE, BidirDshotTelemetryType::ERPM, BidirDshotTelemetryType::CURRENT, BidirDshotTelemetryType::ERPM, BidirDshotTelemetryType::DEBUG_FRAME_1, BidirDshotTelemetryType::ERPM, BidirDshotTelemetryType::DEBUG_FRAME_2, BidirDshotTelemetryType::ERPM, BidirDshotTelemetryType::STRESS, BidirDshotTelemetryType::ERPM, BidirDshotTelemetryType::STATUS, BidirDshotTelemetryType::ERPM};
 
-BidirDshotX1::BidirDshotX1(uint8_t pin, uint32_t speed, PIO pio, int8_t sm) {
+BidirDShotX1::BidirDShotX1(uint8_t pin, uint32_t speed, PIO pio, int8_t sm) {
 #if DBG
-	const char pioStr[32] = "";
+	char pioStr[32] = "";
 	if (pio == pio0) {
 		strcpy(pioStr, "pio0");
 	} else if (pio == pio1) {
@@ -29,7 +33,7 @@ BidirDshotX1::BidirDshotX1(uint8_t pin, uint32_t speed, PIO pio, int8_t sm) {
 	if (sm >= 4 || sm < -1 || pin > 29 || speed < 150 || speed > 4800 || (pio != pio0 && pio != pio1)) {
 		// Bidir Dshot 150 is not official, but since the protocol itself is fine with it, it is allowed here
 #if DBG
-		Serial.printf("BidirDshotX1: Invalid parameters: Check that sm is -1...3, pin is 0...29, speed is 150...4800 and pio is pio0 or pio1. You supplied: sm=%d, pin=%d, speed=%d, pio=%s\n", sm, pin, speed, pioStr);
+		Serial.printf("BidirDShotX1: Invalid parameters: Check that sm is -1...3, pin is 0...29, speed is 150...4800 and pio is pio0 or pio1. You supplied: sm=%d, pin=%d, speed=%d, pio=%s\n", sm, pin, speed, pioStr);
 #endif
 		iError = true;
 		return;
@@ -37,7 +41,7 @@ BidirDshotX1::BidirDshotX1(uint8_t pin, uint32_t speed, PIO pio, int8_t sm) {
 
 #if DBG
 	if (speed != 300 && speed != 600 && speed != 1200 && speed != 2400) {
-		Serial.printf("BidirDshotX1: Unofficial speed: %d. Unless you know what you are doing, please select DShot 300, 600, 1200 or 2400.\n", speed);
+		Serial.printf("BidirDShotX1: Unofficial speed: %d. Unless you know what you are doing, please select DShot 300, 600, 1200 or 2400.\n", speed);
 	}
 #endif
 
@@ -46,7 +50,7 @@ BidirDshotX1::BidirDshotX1(uint8_t pin, uint32_t speed, PIO pio, int8_t sm) {
 		sm = pio_claim_unused_sm(pio, false);
 		if (sm < 0) {
 #if DBG
-			Serial.printf("BidirDshotX1: No free state machines available, pio=%s\n", pioStr);
+			Serial.printf("BidirDShotX1: No free state machines available, pio=%s\n", pioStr);
 #endif
 			iError = true;
 			return;
@@ -54,7 +58,7 @@ BidirDshotX1::BidirDshotX1(uint8_t pin, uint32_t speed, PIO pio, int8_t sm) {
 	} else {
 		if (pio_sm_is_claimed(pio, sm)) {
 #if DBG
-			Serial.println("BidirDshotX1: SM provided but already claimed, pio=%s, sm=%d", pioStr, sm);
+			Serial.printf("BidirDShotX1: SM provided but already claimed, pio=%s, sm=%d", pioStr, sm);
 #endif
 			iError = true;
 			return;
@@ -76,7 +80,7 @@ BidirDshotX1::BidirDshotX1(uint8_t pin, uint32_t speed, PIO pio, int8_t sm) {
 			this->offset = pio_add_program(pio, &bidir_dshot_x1_program);
 		} else {
 #if DBG
-			Serial.println("BidirDshotX1: No space for program on %s", pioStr);
+			Serial.printf("BidirDShotX1: No space for program on %s", pioStr);
 #endif
 			iError = true;
 			pio_sm_unclaim(pio, sm);
@@ -101,7 +105,7 @@ BidirDshotX1::BidirDshotX1(uint8_t pin, uint32_t speed, PIO pio, int8_t sm) {
 	pio_sm_init(pio, this->sm, this->offset, &c);
 	pio_sm_set_consecutive_pindirs(pio, this->sm, pin, 1, true);
 	pio_sm_set_enabled(pio, this->sm, true);
-	uint32_t targetClock = 12000000 * speed / 300; // 12 MHz for DShot300
+	uint32_t targetClock = 12000000 / 300 * speed; // 12 MHz for DShot300
 	uint32_t cpuClock = clock_get_hz(clk_sys);
 	pio_sm_set_clkdiv(pio, this->sm, (float)cpuClock / targetClock);
 
@@ -110,10 +114,10 @@ BidirDshotX1::BidirDshotX1(uint8_t pin, uint32_t speed, PIO pio, int8_t sm) {
 	this->pin = pin;
 	this->speed = speed;
 	this->iError = false;
-	BidirDshotX1::instances.push_back(this);
+	BidirDShotX1::instances.push_back(this);
 }
 
-BidirDshotX1::~BidirDshotX1() {
+BidirDShotX1::~BidirDShotX1() {
 	// if this instance is not initialized, do nothing
 	if (this->iError) {
 		return;
@@ -125,7 +129,7 @@ BidirDshotX1::~BidirDshotX1() {
 		pio_sm_unclaim(this->pio, this->sm);
 	}
 	bool isLast = true;
-	for (auto inst : BidirDshotX1::instances) {
+	for (auto inst : BidirDShotX1::instances) {
 		if (inst != this && inst->pio == this->pio && inst->initError() == false) {
 			isLast = false;
 			break;
@@ -141,17 +145,17 @@ BidirDshotX1::~BidirDshotX1() {
 	gpio_set_function(this->pin, GPIO_FUNC_NULL);
 
 	// remove this instance from the list of instances
-	auto it = BidirDshotX1::instances.begin();
-	while (it != BidirDshotX1::instances.end()) {
+	auto it = BidirDShotX1::instances.begin();
+	while (it != BidirDShotX1::instances.end()) {
 		if (*it == this) {
-			it = BidirDshotX1::instances.erase(it);
+			it = BidirDShotX1::instances.erase(it);
 		} else {
 			it++;
 		}
 	}
 }
 
-void BidirDshotX1::sendThrottle(uint16_t throttle) {
+void BidirDShotX1::sendThrottle(uint16_t throttle) {
 	// check if the throttle value is valid
 	if (throttle > 2000) {
 		throttle = 2000;
@@ -162,20 +166,20 @@ void BidirDshotX1::sendThrottle(uint16_t throttle) {
 	this->sendRaw12Bit(throttle);
 }
 
-void BidirDshotX1::sendRaw11Bit(uint16_t data) {
+void BidirDShotX1::sendRaw11Bit(uint16_t data) {
 	data = (data << 1) | 1;
 	this->sendRaw12Bit(data);
 }
 
-void BidirDshotX1::sendRaw12Bit(uint16_t data) {
+void BidirDShotX1::sendRaw12Bit(uint16_t data) {
 	data = this->appendChecksum(data);
 
 	if (pio_sm_get_pc(this->pio, this->sm) != this->offset + 2)
 		pio_sm_exec(pio, sm, pio_encode_jmp(this->offset + 1));
-	pio_sm_put(this->pio, this->sm, data);
+	pio_sm_put(this->pio, this->sm, ~data);
 }
 
-uint16_t BidirDshotX1::appendChecksum(uint16_t data) {
+uint16_t BidirDShotX1::appendChecksum(uint16_t data) {
 	int csum = data;
 	csum ^= data >> 4;
 	csum ^= data >> 8;
@@ -184,11 +188,11 @@ uint16_t BidirDshotX1::appendChecksum(uint16_t data) {
 	return (data << 4) | csum;
 }
 
-bool BidirDshotX1::checkTelemetryAvailable() {
+bool BidirDShotX1::checkTelemetryAvailable() {
 	return !pio_sm_is_rx_fifo_empty(this->pio, this->sm);
 }
 
-BidirDshotTelemetryType BidirDshotX1::getTelemetryErpm(uint32_t *value) {
+BidirDshotTelemetryType BidirDShotX1::getTelemetryErpm(uint32_t *value) {
 	uint32_t raw;
 	BidirDshotTelemetryType ret = this->getTelemetryRaw(&raw);
 	if (ret > BidirDshotTelemetryType::NO_PACKET) {
@@ -206,7 +210,7 @@ BidirDshotTelemetryType BidirDshotX1::getTelemetryErpm(uint32_t *value) {
 	return BidirDshotTelemetryType::ERPM;
 }
 
-BidirDshotTelemetryType BidirDshotX1::getTelemetryPacket(uint32_t *value) {
+BidirDshotTelemetryType BidirDShotX1::getTelemetryPacket(uint32_t *value) {
 	uint32_t raw;
 	BidirDshotTelemetryType ret = this->getTelemetryRaw(&raw);
 
@@ -223,7 +227,7 @@ BidirDshotTelemetryType BidirDshotX1::getTelemetryPacket(uint32_t *value) {
 	return ret;
 }
 
-BidirDshotTelemetryType BidirDshotX1::getTelemetryRaw(uint32_t *value) {
+BidirDshotTelemetryType BidirDShotX1::getTelemetryRaw(uint32_t *value) {
 	if (pio_sm_is_rx_fifo_empty(this->pio, this->sm)) {
 		return BidirDshotTelemetryType::NO_PACKET;
 	}

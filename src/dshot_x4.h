@@ -6,6 +6,7 @@ class DShotX4 {
 public:
 	static vector<DShotX4 *> instances;
 
+	DShotX4() = delete;
 	/**
 	 * @brief Initialize a new DShotX4 instance
 	 *
