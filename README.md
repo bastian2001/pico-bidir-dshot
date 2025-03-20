@@ -3,6 +3,15 @@
 > [!NOTE]
 > This library is still in development and not yet ready for use. Please check in a few days. While the code itself is tested on my FC, refactoring for the library is still ongoing.
 
+## Roadmap
+
+[x] Refactor code into library
+[] Add example code and test on RP2040
+[] Add documentation
+[] Adjust code for RP2350 (more PIOs)
+[] Test on RP2350
+[] Release to Arduino Library Manager
+
 ## Features
 
 -   Easy to use
