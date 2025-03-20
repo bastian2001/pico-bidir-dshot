@@ -201,6 +201,10 @@ BidirDshotTelemetryType BidirDShotX1::getTelemetryErpm(uint32_t *value) {
 	if (ret > BidirDshotTelemetryType::ERPM) {
 		return ret;
 	}
+	if (raw == 0xFFF) {
+		*value = 0;
+		return BidirDshotTelemetryType::ERPM;
+	}
 	raw = (raw & 0x1FF) << (raw >> 9); // eeem mmmm mmmm
 	if (!raw) {
 		return BidirDshotTelemetryType::CHECKSUM_ERROR; // not quite right, but close enough
@@ -215,6 +219,10 @@ BidirDshotTelemetryType BidirDShotX1::getTelemetryPacket(uint32_t *value) {
 	BidirDshotTelemetryType ret = this->getTelemetryRaw(&raw);
 
 	if (ret == BidirDshotTelemetryType::ERPM) {
+		if (raw == 0xFFF) {
+			*value = 0;
+			return BidirDshotTelemetryType::ERPM;
+		}
 		raw = (raw & 0x1FF) << (raw >> 9); // eeem mmmm mmmm
 		if (!raw) {
 			return BidirDshotTelemetryType::CHECKSUM_ERROR; // not quite right, but close enough
@@ -245,6 +253,7 @@ BidirDshotTelemetryType BidirDShotX1::getTelemetryRaw(uint32_t *value) {
 	data |= escDecodeLut[(raw >> 15) & 0x1F] << 12;
 	uint32_t checksum = (data >> 8) ^ data;
 	checksum ^= checksum >> 4;
+	checksum &= 0x0F;
 	if (checksum != 0x0F || data > 0xFFFF) {
 		return BidirDshotTelemetryType::CHECKSUM_ERROR;
 	}
