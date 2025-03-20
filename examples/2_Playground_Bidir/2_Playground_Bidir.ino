@@ -10,8 +10,8 @@
 #define MOTOR_POLES 14
 
 BidirDShotX1 *esc;
-volatile uint16_t throttle = 0;
-volatile uint32_t rpm = 0;
+uint16_t throttle = 0;
+uint32_t rpm = 0;
 
 void setup() {
 	Serial.begin(115200);
@@ -24,10 +24,10 @@ void loop() {
 	// we also need at least 60ish us + 2 packet lengths (53us at DShot600 => 113ish us) before we can send a new throttle value.
 	// Check the docs if you want to know more about the timing. It is possible to just send the throttle value directly after getting the rpm though, as long as there is enough time between the two sent frames.
 	delayMicroseconds(200);
-	uint32_t r = 0;
-	esc->getTelemetryErpm(&r);
-	r /= MOTOR_POLES / 2; // eRPM = RPM * poles/2
-	rpm = r;
+
+	esc->getTelemetryErpm(&rpm);
+	rpm /= MOTOR_POLES / 2; // eRPM = RPM * poles/2
+
 	esc->sendThrottle(throttle);
 
 	// serial stuff

@@ -22,9 +22,10 @@ void setup() {
 }
 
 void loop() {
-	// sendThrottle is non-blocking. That means, we must not send it too fast (manual delayMicroseconds).
+	// sendThrottles is non-blocking. That means, we must not send it too fast (manual delayMicroseconds).
 	// at DShot600, the maximum theoretical loop rate is about 35kHz, but it is unlikely that any ESC will use all those values, if it even works. Here we use roughly 5kHz.
 	delayMicroseconds(200);
+
 	uint16_t throttles[4] = {0, 0, 0, 0}; // throttle values for each motor. Always hand over an array of 4 values, even if you only use one motor. The other values will be ignored.
 	esc->sendThrottles(throttles); // 0-2000
 

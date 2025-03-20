@@ -6,7 +6,7 @@
 ## Roadmap
 
 [x] Refactor code into library
-[] Add example code and test on RP2040
+[x] Add example code and test on RP2040
 [] Add documentation
 [] Adjust code for RP2350 (more PIOs)
 [] Test on RP2350

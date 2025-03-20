@@ -21,6 +21,7 @@ void loop() {
 	// sendThrottle is non-blocking. That means, we must not send it too fast (manual delayMicroseconds).
 	// at DShot600, the maximum achievable loop rate is about 9kHz. Roughly 6k for DShot300, 12k for DShot1200.
 	delayMicroseconds(200);
+
 	uint16_t throttle = 0;
 	if (millis() % 10000 > 5000) {
 		throttle = 400; // maximum throttle is 2000, 400 is 20%
