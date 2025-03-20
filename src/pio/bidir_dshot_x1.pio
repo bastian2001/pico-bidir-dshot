@@ -1,0 +1,66 @@
+.program bidir_dshot_x1
+
+start:
+.wrap_target
+push block
+set pindirs, 1
+pull block
+
+; write DShot packet
+out null, 16; throw away the left 16 bits
+write_one_bit:
+set pins, 0 [14]
+out pins, 1 [14]
+set pins, 1 [8]
+jmp !osre write_one_bit
+
+; one bit takes 32 PIO cycles, so after 16 PIO cycles we begin to count it as a bit. After 32 more cycles the second bit etc.
+; That means we round the cycle count to the nearest multiple of 32 and then divide by 32 to get the bit count.
+
+; prepare reading of ERPM
+set x, 20
+; x = counter of bits remaining to be read
+mov osr, ~null
+; osr full of 1s (0xFFFFFFFF), so we have access to 1s each time we read a 1 (without relying on the pin still being a 1)
+; y = counter of loops remaining to be counted for the current bit
+
+set pindirs, 0
+wait_for_pin:
+jmp pin, wait_for_pin [1]; wait for the pin to go low
+
+new_zero:
+set y, 6 ; 6 + 1 loops (do while)
+; the first time takes 4 PIO cycles, then 2 per measurement
+; => 4 + 6*2 = 16 cycles
+jmp meas_zero
+
+another_zero:
+set y, 13 [1] ; 13 + 1 loops (do while)
+; the first time takes 8 PIO cycles, then 2 per measurement
+; => 6 + 13*2 = 32 cycles
+
+meas_zero:
+jmp pin new_one
+jmp y-- meas_zero
+in null, 1
+jmp x-- another_zero
+jmp start; stop, as we have read all bits, autopush will take care of the rest
+
+new_one:
+set y, 6 [1]
+jmp meas_one
+
+another_one:
+set y, 13 [1]
+
+meas_one:
+jmp pin cont_meas_one 
+jmp new_zero
+cont_meas_one:
+jmp y-- meas_one
+in osr, 1; read the bit (always 1 because osr = 0xFFFFFFFF)
+jmp x-- another_one
+; we have read all bits, autopush will take care of the rest
+
+
+.wrap

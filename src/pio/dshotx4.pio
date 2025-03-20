@@ -1,0 +1,8 @@
+.program dshotx4
+
+.wrap_target
+pull ifempty block
+set pins, 0b1111 [14]
+out pins, 4 [14]
+set pins, 0b0000 [8]
+.wrap
