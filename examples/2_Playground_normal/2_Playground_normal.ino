@@ -31,7 +31,8 @@ void loop() {
 		while (Serial.available()) {
 			s += (char)Serial.read();
 		}
-		throttle = s.toInt();
-		throttle = constrain(throttle, 0, 2000);
+		int32_t t = s.toInt();
+		t = constrain(t, 0, 2000);
+		throttle = t;
 	}
 }
