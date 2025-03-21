@@ -116,6 +116,16 @@ public:
 	 */
 	BidirDshotTelemetryType getTelemetryRaw(uint32_t *value);
 
+	/**
+	 * @brief Converts a getTelemetryRaw value to a getTelemetryPacket value
+	 *
+	 * In case the value is an invalid RPM (usually declared as CHECKSUM_ERROR), the return value will just be 0xFFFFFFFFULL.
+	 *
+	 * @param raw
+	 * @return uint32_t
+	 */
+	static uint32_t convertFromRaw(uint32_t raw, BidirDshotTelemetryType type);
+
 	bool initError() {
 		return iError;
 	}

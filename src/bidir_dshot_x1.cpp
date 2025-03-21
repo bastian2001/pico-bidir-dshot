@@ -261,3 +261,17 @@ BidirDshotTelemetryType BidirDShotX1::getTelemetryRaw(uint32_t *value) {
 	*value = data >> 4;
 	return telemetryTypeLut[data >> 12];
 }
+
+uint32_t BidirDShotX1::convertFromRaw(uint32_t raw, BidirDshotTelemetryType type) {
+	if (type == BidirDshotTelemetryType::ERPM) {
+		if (raw == 0xFFF) {
+			return 0;
+		}
+		raw = (raw & 0x1FF) << (raw >> 9); // eeem mmmm mmmm
+		if (!raw) {
+			return -1; // not quite right, but close enough
+		}
+		raw = (60000000 + 50 * raw) / raw;
+	}
+	return raw;
+}
