@@ -272,6 +272,7 @@ uint32_t BidirDShotX1::convertFromRaw(uint32_t raw, BidirDshotTelemetryType type
 			return -1; // not quite right, but close enough
 		}
 		raw = (60000000 + 50 * raw) / raw;
+		return raw;
 	}
-	return raw;
+	return raw & 0xFF;
 }

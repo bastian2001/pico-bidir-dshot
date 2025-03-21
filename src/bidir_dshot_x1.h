@@ -121,8 +121,9 @@ public:
 	 *
 	 * In case the value is an invalid RPM (usually declared as CHECKSUM_ERROR), the return value will just be 0xFFFFFFFFULL.
 	 *
-	 * @param raw
-	 * @return uint32_t
+	 * @param raw the raw 12 bit value from getTelemetryRaw
+	 * @param type the telemetry type of the raw value (yes, this is a bit redundant as it already appears in the 12 bits, but this means we'll not have the same logic in two places)
+	 * @return uint32_t the converted value
 	 */
 	static uint32_t convertFromRaw(uint32_t raw, BidirDshotTelemetryType type);
 
