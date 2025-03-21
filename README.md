@@ -56,6 +56,8 @@ lib_deps = https://github.com/bastian2001/pico-bidir-dshot.git
 
 This is essentially a bare minimum example. For more details, check the integrated examples or the [Wiki](https://github.com/bastian2001/pico-bidir-dshot/wiki).
 
+Not calling `getTelemetryErpm` is fine if you don't care about that, but you definitely need to call `sendThrottle` regularly (recommended >500Hz), or else the ESC will time out because it thinks the main controller died.
+
 ```cpp
 #include <PIO_DShot.h>
 #define MOTOR_POLES 14
