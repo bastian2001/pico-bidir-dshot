@@ -7,10 +7,10 @@
 
 -   [x] Refactor code into library
 -   [x] Add example code and test on RP2040
--   [ ] Add documentation
+-   [x] Add documentation
 -   [ ] Adjust code for RP2350 (more PIOs)
 -   [ ] Test on RP2350
--   [ ] Release to Arduino Library Manager
+-   [x] Release to Arduino Library Manager
 -   [ ] Add more setups (e.g. DShotX1 - more efficient and versatile, DShotX8 - less PIO usage)
 -   [ ] Add more features (command queue, sendAll etc.)
 
@@ -37,8 +37,7 @@
 
 ## Installation
 
-> [!NOTE]
-> This library is not yet available on the Arduino Library Manager. For now, only supported on PlatformIO.
+### PlatformIO
 
 1. Requires Earle F. Philhower, III's arduino-pico port [Installation](https://arduino-pico.readthedocs.io/en/latest/install.html)
 2. Append this repo to your lib_deps in your `platformio.ini`:
@@ -47,9 +46,34 @@
 lib_deps = https://github.com/bastian2001/pico-bidir-dshot.git
 ```
 
+### Arduino IDE
+
+1. Requires Earle F. Philhower, III's arduino-pico port [Installation](https://arduino-pico.readthedocs.io/en/latest/install.html)
+2. Open the Arduino IDE and go to `Sketch` -> `Include Library` -> `Manage Libraries...`
+3. In the Library Manager, search for `DShot_for_RP2040_RP2350_Pi_Pico` and install it
+
 ## Usage
 
-TODO
+This is essentially a bare minimum example. For more details, check the integrated examples or the [Wiki](https://github.com/bastian2001/pico-bidir-dshot/wiki).
+
+```cpp
+#include <PIO_DShot.h>
+#define MOTOR_POLES 14
+
+BidirDShotX1 *esc;
+
+void setup() {
+	esc = new BidirDShotX1(10, 600); // pin 10, DShot600
+}
+
+void loop() {
+	delayMicroseconds(200); // keep packets spaced out
+	uint32_t rpm = 0;
+	esc->getTelemetryErpm(&rpm);
+	rpm /= MOTOR_POLES / 2; // eRPM = RPM * poles/2
+	esc->sendThrottle(0); // 0-2000
+}
+```
 
 ## Contributing
 
