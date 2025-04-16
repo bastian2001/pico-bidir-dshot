@@ -9,9 +9,9 @@ pull block
 ; write DShot packet
 out null, 16; throw away the left 16 bits
 write_one_bit:
-set pins, 0 [14]
-out pins, 1 [14]
-set pins, 1 [8]
+set pins, 0 [13]
+out pins, 1 [13]
+set pins, 1 [10]
 jmp !osre write_one_bit
 
 ; one bit takes 32 PIO cycles, so after 16 PIO cycles we begin to count it as a bit. After 32 more cycles the second bit etc.

@@ -21,9 +21,9 @@ static const uint16_t bidir_dshot_x1_program_instructions[] = {
 	0xe081, //  1: set    pindirs, 1
 	0x80a0, //  2: pull   block
 	0x6070, //  3: out    null, 16
-	0xee00, //  4: set    pins, 0                [14]
-	0x6e01, //  5: out    pins, 1                [14]
-	0xe801, //  6: set    pins, 1                [8]
+	0xed00, //  4: set    pins, 0                [13]
+	0x6d01, //  5: out    pins, 1                [13]
+	0xea01, //  6: set    pins, 1                [10]
 	0x00e4, //  7: jmp    !osre, 4
 	0xe034, //  8: set    x, 20
 	0xa0eb, //  9: mov    osr, !null

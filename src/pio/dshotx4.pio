@@ -1,8 +1,11 @@
 .program dshotx4
 
+; writes 8 bits per word/pull
+; since each packet is 16 bits, we count on the CPU to send 2 packets in a row
+
 .wrap_target
 pull ifempty block
-set pins, 0b1111 [14]
-out pins, 4 [14]
-set pins, 0b0000 [8]
+set pins, 0b1111 [13]
+out pins, 4 [13]
+set pins, 0b0000 [10]
 .wrap
