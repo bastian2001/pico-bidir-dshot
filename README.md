@@ -8,7 +8,7 @@
 -   [x] Refactor code into library
 -   [x] Add example code and test on RP2040
 -   [x] Add documentation
--   [ ] Adjust code for RP2350 (more PIOs)
+-   [x] Adjust code for RP2350 (more PIOs)
 -   [ ] Test on RP2350
 -   [x] Release to Arduino Library Manager
 -   [ ] Add more setups (e.g. DShotX1 - more efficient and versatile, DShotX8 - less PIO usage)
