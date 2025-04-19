@@ -18,9 +18,9 @@
 static const uint16_t dshotx4_program_instructions[] = {
 	//     .wrap_target
 	0x80e0, //  0: pull   ifempty block
-	0xee0f, //  1: set    pins, 15               [14]
-	0x6e04, //  2: out    pins, 4                [14]
-	0xe800, //  3: set    pins, 0                [8]
+	0xed0f, //  1: set    pins, 15               [13]
+	0x6d04, //  2: out    pins, 4                [13]
+	0xea00, //  3: set    pins, 0                [10]
 	//     .wrap
 };
 
