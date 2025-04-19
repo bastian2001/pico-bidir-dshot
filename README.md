@@ -2,9 +2,9 @@
 
 [![GitHub Release](https://img.shields.io/github/v/release/bastian2001/pico-bidir-dshot?color=48c21a&label=Release)](https://github.com/bastian2001/pico-bidir-dshot/releases)
 [![GitHub License](https://img.shields.io/github/license/bastian2001/pico-bidir-dshot?color=blue&label=License)](https://www.gnu.org/licenses/gpl-3.0)
-![All RPMs](https://img.shields.io/badge/RPMs-To_the_Moon-48c21a)
-[![Difficulty](https://img.shields.io/badge/Difficulty-Easy-blue)](#installation)
-![All RPMs](https://img.shields.io/badge/Pico--SDK-C++-48c21a)
+[![All RPMs](https://img.shields.io/badge/RPMs-To_the_Moon-48c21a)](#)
+[![Difficulty: Easy](https://img.shields.io/badge/Difficulty-Easy-blue)](#installation)
+[![Pico SDK: C++](https://img.shields.io/badge/Pico--SDK-C++-48c21a)](#)
 
 > [!NOTE]
 > This library is still in development and not yet ready for use. Please check in a few days. While the code itself is tested on my FC, refactoring for the library is still ongoing.
