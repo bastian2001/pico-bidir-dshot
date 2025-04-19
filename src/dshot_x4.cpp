@@ -1,6 +1,5 @@
 #include "dshot_x4.h"
 #include "dshot_common.h"
-#include "dshot_config.h"
 #include "hardware/clocks.h"
 #include "pio/dshotx4.pio.h"
 
@@ -9,7 +8,7 @@ vector<DShotX4 *> DShotX4::instances;
 DShotX4::DShotX4(uint8_t pinBase, uint8_t pinCount, uint32_t speed, PIO pio, int8_t sm) {
 #if DBG
 	char pioStr[32] = "";
-	ASSIGN_PIO_STR
+	pioToPioStr(pio, pioStr);
 #else
 	char *pioStr = nullptr;
 #endif

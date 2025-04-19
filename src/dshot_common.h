@@ -1,3 +1,4 @@
+#include "dshot_config.h"
 #include "hardware/pio.h"
 
 #define DBG defined(DSHOT_DEBUG)

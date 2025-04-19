@@ -1,5 +1,4 @@
 #include "dshot_common.h"
-#include "hardware/pio.h"
 
 #if DBG
 void pioToPioStr(PIO pio, char str[32]) {

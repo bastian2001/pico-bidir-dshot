@@ -1,6 +1,5 @@
 #include "bidir_dshot_x1.h"
 #include "dshot_common.h"
-#include "dshot_config.h"
 #include "hardware/clocks.h"
 #include "pio/bidir_dshot_x1.pio.h"
 
