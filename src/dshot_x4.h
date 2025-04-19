@@ -52,18 +52,34 @@ public:
 	 */
 	void sendRaw12Bit(uint16_t data[4]);
 
+	/**
+	 * @brief checks if there was an error during initialisation of the DShot driver
+	 *
+	 * define DSHOT_DEBUG in src/dshot_config.h to enable information on Serial why the initialisation failed
+	 *
+	 * @return true if there was an error
+	 * @return false if everything worked fine
+	 */
 	bool initError() {
 		return iError;
 	}
 
 private:
-	PIO pio;
-	uint8_t pinBase;
-	uint8_t pinCount;
-	uint8_t sm;
-	uint32_t speed;
-	uint8_t offset;
-	bool iError = false;
+	PIO pio; /// which PIO is used for the DShot driver
+	uint8_t pinBase; /// the first pin that is used for DShot output/input
+	uint8_t pinCount; /// the assigned pin count (up to 4)
+	uint8_t sm; /// which state machine is used for the DShot driver
+	uint32_t speed; /// speed in kBaud, e.g. 600 for DShot600
+	uint8_t offset; /// program offset in the PIO instruction memory (needed to point to the same memory location in the next driver)
+	bool iError = false; /// shows if there was an error during initialisation
 
+	/**
+	 * @brief appends a checksum to the outgoing DShot packet
+	 *
+	 * nibble-wise XOR, then bitwise invert.
+	 *
+	 * @param data 12 bit LSB-aligned (right-aligned) packet data (11 bits data + 1 bit telemetry)
+	 * @return uint16_t 16 bit full packet with checksum appended
+	 */
 	static uint16_t appendChecksum(uint16_t data);
 };

@@ -1,12 +1,7 @@
 #include "bidir_dshot_x1.h"
-#include "dshot_config.h"
+#include "dshot_common.h"
 #include "hardware/clocks.h"
 #include "pio/bidir_dshot_x1.pio.h"
-
-#define DBG defined(DSHOT_DEBUG)
-#if DBG
-#include "Arduino.h"
-#endif
 
 vector<BidirDShotX1 *> BidirDShotX1::instances;
 
@@ -19,47 +14,35 @@ const BidirDshotTelemetryType telemetryTypeLut[16] = {BidirDshotTelemetryType::E
 
 BidirDShotX1::BidirDShotX1(uint8_t pin, uint32_t speed, PIO pio, int8_t sm) {
 #if DBG
-	char pioStr[32] = "";
-	if (pio == pio0) {
-		strcpy(pioStr, "pio0");
-	} else if (pio == pio1) {
-		strcpy(pioStr, "pio1");
-	} else {
-		sprintf(pioStr, "%p (invalid PIO)", pio);
-	}
+	char pioStr[32];
+	pioToPioStr(pio, pioStr);
+#else
+	const char *pioStr = nullptr; // always nullptr, don't use
 #endif
 
 	// ensure valid parameters
-	if (sm >= 4 || sm < -1 || pin > 29 || speed < 150 || speed > 4800 || (pio != pio0 && pio != pio1)) {
+	if (sm >= 4 || sm < -1 || pin >= NUM_BANK0_GPIOS || speed < 150 || speed > 4800 || (pio != pio0 && pio != pio1 && (NUM_PIOS <= 2 || pio != pio2))) {
 		// Bidir Dshot 150 is not official, but since the protocol itself is fine with it, it is allowed here
-#if DBG
-		Serial.printf("BidirDShotX1: Invalid parameters: Check that sm is -1...3, pin is 0...29, speed is 150...4800 and pio is pio0 or pio1. You supplied: sm=%d, pin=%d, speed=%d, pio=%s\n", sm, pin, speed, pioStr);
-#endif
+		DEBUG_PRINTF("Invalid parameters: Check that sm is -1...3, pin is 0...29 (or 0...47 on RP2350), speed is 150...4800 and pio is pio0 or pio1 (or pio2 on RP2350). You supplied: sm=%d, pin=%d, speed=%d, pio=%s\n", sm, pin, speed, pioStr);
 		iError = true;
 		return;
 	}
 
-#if DBG
 	if (speed != 300 && speed != 600 && speed != 1200 && speed != 2400) {
-		Serial.printf("BidirDShotX1: Unofficial speed: %d. Unless you know what you are doing, please select DShot 300, 600, 1200 or 2400.\n", speed);
+		DEBUG_PRINTF("Unofficial speed: %d. Unless you know what you are doing, please select DShot 300, 600, 1200 or 2400.\n", speed);
 	}
-#endif
 
 	// Check if SM is claimed, then claim it
 	if (sm == -1) {
 		sm = pio_claim_unused_sm(pio, false);
 		if (sm < 0) {
-#if DBG
-			Serial.printf("BidirDShotX1: No free state machines available, pio=%s\n", pioStr);
-#endif
+			DEBUG_PRINTF("No free state machines available, pio=%s\n", pioStr);
 			iError = true;
 			return;
 		}
 	} else {
 		if (pio_sm_is_claimed(pio, sm)) {
-#if DBG
-			Serial.printf("BidirDShotX1: SM provided but already claimed, pio=%s, sm=%d", pioStr, sm);
-#endif
+			DEBUG_PRINTF("SM provided but already claimed, pio=%s, sm=%d", pioStr, sm);
 			iError = true;
 			return;
 		}
@@ -79,9 +62,7 @@ BidirDShotX1::BidirDShotX1(uint8_t pin, uint32_t speed, PIO pio, int8_t sm) {
 		if (pio_can_add_program(pio, &bidir_dshot_x1_program)) {
 			this->offset = pio_add_program(pio, &bidir_dshot_x1_program);
 		} else {
-#if DBG
-			Serial.printf("BidirDShotX1: No space for program on %s", pioStr);
-#endif
+			DEBUG_PRINTF("No space for program on %s", pioStr);
 			iError = true;
 			pio_sm_unclaim(pio, sm);
 			return;
