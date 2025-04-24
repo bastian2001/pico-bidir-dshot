@@ -1,3 +1,6 @@
+#ifndef DSHOT_X4_H
+#define DSHOT_X4_H
+
 #include "hardware/pio.h"
 #include <vector>
 using std::vector;
@@ -83,3 +86,5 @@ private:
 	 */
 	static uint16_t appendChecksum(uint16_t data);
 };
+
+#endif // DSHOT_X4_H

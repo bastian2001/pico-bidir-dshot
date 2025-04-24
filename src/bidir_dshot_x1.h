@@ -1,3 +1,6 @@
+#ifndef BIDIR_DSHOT_X1_H
+#define BIDIR_DSHOT_X1_H
+
 #include "hardware/pio.h"
 #include <vector>
 using std::vector;
@@ -157,3 +160,5 @@ private:
 	 */
 	static uint16_t appendChecksum(uint16_t data);
 };
+
+#endif // BIDIR_DSHOT_X1_H
