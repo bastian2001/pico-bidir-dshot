@@ -14,7 +14,11 @@ DShotX4::DShotX4(uint8_t pinBase, uint8_t pinCount, uint32_t speed, PIO pio, int
 #endif
 
 	// ensure valid parameters
-	if (sm >= 4 || sm < -1 || pinBase >= NUM_BANK0_GPIOS || pinCount > 4 || !pinCount || speed < 150 || speed > 4800 || (pio != pio0 && pio != pio1 && (NUM_PIOS <= 2 || pio != pio2))) {
+	if (sm >= 4 || sm < -1 || pinBase >= NUM_BANK0_GPIOS || pinCount > 4 || !pinCount || speed < 150 || speed > 4800 || (pio != pio0 && pio != pio1
+		#if NUM_PIOS > 2
+		&& pio != pio2
+		#endif	
+		)) {
 		DEBUG_PRINTF("Invalid parameters: Check that sm is -1...3, pinBase is 0...29 (or 0...47 on RP2350), pinCount is 1...4, speed is 150...4800 and pio is pio0 or pio1 (or pio2 on RP2350). You supplied: sm=%d, pinBase=%d, pinCount=%d, speed=%d, pio=%s\n", sm, pinBase, pinCount, speed, pioStr);
 		iError = true;
 		return;
