@@ -3,7 +3,7 @@
  * It is expected, that you have done all the examples before this one.
  *
  * This is the most advanced example. It uses Extended DShot telemetry to not just get the RPM, but also all the other telemetry values. It is controlled via commands:
- * - Send your Serial Monitor or Serial Plotter to New line mode (\n)
+ * - Set your Serial Monitor or Serial Plotter to New line mode (\n)
  * - Type T1000 for sending a throttle value of 1000 (0-2000)
  * - Type C3 for sending a special command (0-47) -> 3 = beacon 3 (only send them when stopped, and all commands are sent 10 times in this example)
  * - Type E to enable Extended DShot telemetry (this is the same as sending C13)
@@ -61,11 +61,11 @@ void loop() {
 	case BidirDshotTelemetryType::DEBUG_FRAME_1:
 		// custom ESC telemetry, not used in regular ESCs
 	case BidirDshotTelemetryType::DEBUG_FRAME_2:
-	// custom ESC telemetry, not used in regular ESCs
+		// custom ESC telemetry, not used in regular ESCs
 	case BidirDshotTelemetryType::CHECKSUM_ERROR:
-	// Means the last packet was received, but corrupted. This is not a problem, just ignore it.
+		// Means the last packet was received, but corrupted. This is not a problem, just ignore it.
 	case BidirDshotTelemetryType::NO_PACKET:
-	// No telemetry packet available. Either the wait time between writing the last DShot packet and reading the telemetry packet was too short, or the ESC is not powered. This is not a problem, just ignore it.
+		// No telemetry packet available. Either the wait time between writing the last DShot packet and reading the telemetry packet was too short, or the ESC is not powered. This is not a problem, just ignore it.
 	default:
 		break;
 	}
@@ -105,7 +105,7 @@ void loop() {
 			sendSpecialCommand(value);
 			break;
 		case 'E':
-			sendSpecialCommand(13);
+			sendSpecialCommand(DSHOT_CMD_EXTENDED_TELEMETRY_ENABLE);
 			break;
 		default:
 			throttle = 0;

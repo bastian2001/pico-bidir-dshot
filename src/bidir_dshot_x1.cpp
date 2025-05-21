@@ -21,11 +21,14 @@ BidirDShotX1::BidirDShotX1(uint8_t pin, uint32_t speed, PIO pio, int8_t sm) {
 #endif
 
 	// ensure valid parameters
-	if (sm >= 4 || sm < -1 || pin >= NUM_BANK0_GPIOS || speed < 150 || speed > 4800 || (pio != pio0 && pio != pio1 
-		#if NUM_PIOS > 2
-		&& pio != pio2
-		#endif	
-		)) {
+	if (sm >= 4 || sm < -1 ||
+		pin >= NUM_BANK0_GPIOS ||
+		speed < 150 || speed > 4800 ||
+		(pio != pio0 && pio != pio1
+#if NUM_PIOS > 2
+		 && pio != pio2
+#endif
+		 )) {
 		// Bidir Dshot 150 is not official, but since the protocol itself is fine with it, it is allowed here
 		DEBUG_PRINTF("Invalid parameters: Check that sm is -1...3, pin is 0...29 (or 0...47 on RP2350), speed is 150...4800 and pio is pio0 or pio1 (or pio2 on RP2350). You supplied: sm=%d, pin=%d, speed=%d, pio=%s\n", sm, pin, speed, pioStr);
 		iError = true;
