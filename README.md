@@ -44,7 +44,7 @@
 
 ### PlatformIO
 
-1. Requires Earle F. Philhower, III's arduino-pico port [Installation](https://arduino-pico.readthedocs.io/en/latest/install.html)
+1. Recommended: Earle F. Philhower, III's arduino-pico port [Installation](https://arduino-pico.readthedocs.io/en/latest/install.html)
 2. Append this repo to your lib_deps in your `platformio.ini`:
 
 ```ini
@@ -53,9 +53,13 @@ lib_deps = https://github.com/bastian2001/pico-bidir-dshot.git
 
 ### Arduino IDE
 
-1. Requires Earle F. Philhower, III's arduino-pico port [Installation](https://arduino-pico.readthedocs.io/en/latest/install.html)
+1. Recommended: Earle F. Philhower, III's arduino-pico port [Installation](https://arduino-pico.readthedocs.io/en/latest/install.html)
 2. Open the Arduino IDE and go to `Sketch` -> `Include Library` -> `Manage Libraries...`
-3. In the Library Manager, search for `DShot_for_RP2040_RP2350_Pi_Pico` and install it
+3. In the Library Manager, search for `Pico_Bidir_DShot` and install it
+
+### CMake (bare Pico-SDK)
+
+The code is written to use as little Arduino.h as possible, so it can be used with the bare Pico SDK as well. Only the debug info uses Arduino's Serial class, so you can't enable those error hints without it. I personally never used CMake (manually), so sadly I can't help you with the installation.
 
 ## Usage
 
