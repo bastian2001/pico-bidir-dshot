@@ -6,19 +6,6 @@
 [![Difficulty: Easy](https://img.shields.io/badge/Difficulty-Easy-blue)](#installation)
 [![Pico SDK: C++](https://img.shields.io/badge/Pico--SDK-C++-48c21a)](#)
 
-> [!NOTE]
-> This library is still in development and not yet ready for use. Please check in a few days. While the code itself is tested on my FC, refactoring for the library is still ongoing.
-
-## Roadmap
-
--   [x] Refactor code into library
--   [x] Add example code and test on RP2040
--   [x] Add documentation
--   [x] Adjust and test code for RP2350 (more PIOs)
--   [x] Release to Arduino Library Manager
--   [ ] Add more setups (e.g. DShotX1 - more efficient and versatile, DShotX8 - less PIO usage)
--   [ ] Add more features (command queue, sendAll etc.)
-
 ## Features
 
 -   Easy to use
@@ -26,7 +13,7 @@
     -   Low setup and usage complexity
     -   ERPM packets are decoded in this library
 -   Fast bidirectional communication
-    -   Bidirectional and normal DShot up to 4800 (tested up to 1200)
+    -   Bidirectional and normal DShot up to 4800 (tested up to DShot 1200)
     -   Speed only limited by DShot protocol
     -   Fully asynchronous: no CPU intervention needed for sending or receiving
 -   14x Oversampling with edge detection
@@ -39,6 +26,31 @@
     -   Read ESC temperature, voltage, current and more: all integrated
     -   See [here](https://github.com/bird-sanctuary/extended-dshot-telemetry) for more information
 -   Reliable and battle-tested in my [flight controller](https://github.com/bastian2001/Kolibri-FC)
+
+## Usage
+
+This is essentially a bare minimum example for the Arduino IDE. For more details, check the integrated examples or the [Wiki](https://github.com/bastian2001/pico-bidir-dshot/wiki).
+
+```cpp
+#include <PIO_DShot.h>
+#define MOTOR_POLES 14
+
+BidirDShotX1 *esc;
+
+void setup() {
+	esc = new BidirDShotX1(10, 600); // pin 10, DShot600
+}
+
+void loop() {
+	delayMicroseconds(200); // keep packets spaced out
+	uint32_t rpm = 0;
+	esc->getTelemetryErpm(&rpm);
+	rpm /= MOTOR_POLES / 2; // eRPM = RPM * poles/2
+	esc->sendThrottle(0); // 0-2000
+}
+```
+
+Not calling `getTelemetryErpm` is fine if you don't care about that, but you definitely need to call `sendThrottle` regularly (recommended >500Hz), or else the ESC will time out because it thinks the main controller died.
 
 ## Installation
 
@@ -61,30 +73,15 @@ lib_deps = https://github.com/bastian2001/pico-bidir-dshot.git
 
 The code is written to use as little Arduino.h as possible, so it can be used with the bare Pico SDK as well. Only the debug info uses Arduino's Serial class, so you can't enable those error hints without it. I personally never used CMake (manually), so sadly I can't help you with the installation.
 
-## Usage
+## Roadmap
 
-This is essentially a bare minimum example. For more details, check the integrated examples or the [Wiki](https://github.com/bastian2001/pico-bidir-dshot/wiki).
-
-Not calling `getTelemetryErpm` is fine if you don't care about that, but you definitely need to call `sendThrottle` regularly (recommended >500Hz), or else the ESC will time out because it thinks the main controller died.
-
-```cpp
-#include <PIO_DShot.h>
-#define MOTOR_POLES 14
-
-BidirDShotX1 *esc;
-
-void setup() {
-	esc = new BidirDShotX1(10, 600); // pin 10, DShot600
-}
-
-void loop() {
-	delayMicroseconds(200); // keep packets spaced out
-	uint32_t rpm = 0;
-	esc->getTelemetryErpm(&rpm);
-	rpm /= MOTOR_POLES / 2; // eRPM = RPM * poles/2
-	esc->sendThrottle(0); // 0-2000
-}
-```
+-   [x] Refactor code into library
+-   [x] Add example code and test on RP2040
+-   [x] Add documentation
+-   [x] Adjust and test code for RP2350 (more PIOs)
+-   [x] Release to Arduino Library Manager
+-   [ ] Add more setups (e.g. DShotX1 - more efficient and versatile, DShotX8 - less PIO usage)
+-   [ ] Add more features (command queue, sendAll etc.)
 
 ## Contributing
 
