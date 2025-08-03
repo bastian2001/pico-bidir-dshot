@@ -1,0 +1,22 @@
+{
+	"$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
+	"name": "Pico_Bidir_DShot",
+	"version": "1.0.1",
+	"keywords": "dshot",
+	"build": {
+		"libLDFMode": "off"
+	},
+	"description": "Bidirectional DShot library for RP2040/RP2350 (Raspberry Pi Pico Series), using the PIO hardware.",
+	"authors": [
+		{
+			"name": "Bastian2001",
+			"url": "https://github.com/bastian2001",
+			"maintainer": true
+		}
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/bastian2001/pico-bidir-dshot.git"
+	},
+	"frameworks": "arduino"
+}
