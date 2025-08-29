@@ -3,7 +3,7 @@
 [![GitHub Release](https://img.shields.io/github/v/release/bastian2001/pico-bidir-dshot?color=48c21a&label=Release)](https://github.com/bastian2001/pico-bidir-dshot/releases)
 [![GitHub License](https://img.shields.io/github/license/bastian2001/pico-bidir-dshot?color=blue&label=License)](https://www.gnu.org/licenses/gpl-3.0)
 [![All RPMs](https://img.shields.io/badge/RPMs-To_the_Moon-48c21a)](#)
-[![Difficulty: Easy](https://img.shields.io/badge/Difficulty-Easy-blue)](#installation)
+[![Difficulty: Easy](https://img.shields.io/badge/Difficulty-Easy-blue)](#usage)
 [![Pico SDK: C++](https://img.shields.io/badge/Pico--SDK-C++-48c21a)](#)
 
 ## Features
@@ -16,16 +16,15 @@
     -   Bidirectional and normal DShot up to 4800 (tested up to DShot 1200)
     -   Speed only limited by DShot protocol
     -   Fully asynchronous: no CPU intervention needed for sending or receiving
--   14x Oversampling with edge detection
+-   Oversampling with edge detection
     -   Telemetry unaffected by jitter/aliasing or clock differences between ESC and MCU
     -   Low CPU overhead: Edge detection is done on the PIO
 -   Low usage of PIO hardware
-    -   Bidirectional DShot needs 28 instructions and 1 state machine = 1 ESC => max 8/12 ESCs
-    -   Normal DShot only needs 4 instructions and 1 state machine = 4 ESCs => max 30/48 ESCs
+    -   Bidirectional DShot needs 28 instructions and 1 state machine per ESC => max 8/12 ESCs
+    -   Normal DShot needs 4 instructions and 1 state machine per 4 ESCs => max 30/48 ESCs
 -   Extended DShot Telemetry support
     -   Read ESC temperature, voltage, current and more: all integrated
     -   See [here](https://github.com/bird-sanctuary/extended-dshot-telemetry) for more information
--   Reliable and battle-tested in my [flight controller](https://github.com/bastian2001/Kolibri-FC)
 
 ## Usage
 
@@ -45,7 +44,7 @@ void loop() {
 	delayMicroseconds(200); // keep packets spaced out
 	uint32_t rpm = 0;
 	esc->getTelemetryErpm(&rpm);
-	rpm /= MOTOR_POLES / 2; // eRPM = RPM * poles/2
+	rpm /= MOTOR_POLES / 2; // eRPM = RPM * poles/2 <=> RPM = eRPM / (poles/2)
 	esc->sendThrottle(0); // 0-2000
 }
 ```
@@ -54,24 +53,22 @@ Not calling `getTelemetryErpm` is fine if you don't care about that, but you def
 
 ## Installation
 
+### Arduino IDE
+
+1. Open the Arduino IDE and go to `Sketch` -> `Include Library` -> `Manage Libraries...`
+2. In the Library Manager, search for `Pico_Bidir_DShot` and install it
+
 ### PlatformIO
 
-1. Recommended: Earle F. Philhower, III's arduino-pico port [Installation](https://arduino-pico.readthedocs.io/en/latest/install.html)
-2. Append this repo to your lib_deps in your `platformio.ini`:
+Append this repo to your lib_deps in your `platformio.ini`:
 
 ```ini
 lib_deps = https://github.com/bastian2001/pico-bidir-dshot.git
 ```
 
-### Arduino IDE
-
-1. Recommended: Earle F. Philhower, III's arduino-pico port [Installation](https://arduino-pico.readthedocs.io/en/latest/install.html)
-2. Open the Arduino IDE and go to `Sketch` -> `Include Library` -> `Manage Libraries...`
-3. In the Library Manager, search for `Pico_Bidir_DShot` and install it
-
 ### CMake (bare Pico-SDK)
 
-The code is written to use as little Arduino.h as possible, so it can be used with the bare Pico SDK as well. Only the debug info uses Arduino's Serial class, so you can't enable those error hints without it. I personally never used CMake (manually), so sadly I can't help you with the installation.
+The code is written to use no Arduino.h for regular usage, so it can be used with the bare Pico SDK as well. Only the debug info uses Arduino's Serial class, so you can't enable those error hints without it. I personally never used CMake (manually), so sadly I can't help you with the installation.
 
 ## Roadmap
 
@@ -80,7 +77,7 @@ The code is written to use as little Arduino.h as possible, so it can be used wi
 -   [x] Add documentation
 -   [x] Adjust and test code for RP2350 (more PIOs)
 -   [x] Release to Arduino Library Manager
--   [ ] Add more setups (e.g. DShotX1 - more efficient and versatile, DShotX8 - less PIO usage)
+-   [ ] Add more setups (e.g. DShotX1 - more efficient and versatile, DShotX8 - less PIOs needed)
 -   [ ] Add more features (command queue, sendAll etc.)
 
 ## Contributing
