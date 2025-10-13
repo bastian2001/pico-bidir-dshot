@@ -15,3 +15,10 @@ void pioToPioStr(PIO pio, char str[32]) {
 	}
 }
 #endif
+
+// in case _gpio_init does not exist, define it weakly
+extern "C" void _gpio_init(uint gpio) __attribute__((weak));
+
+extern "C" __attribute__((weak)) void gpio_init(uint gpio) {
+	_gpio_init(gpio);
+}
