@@ -2,7 +2,7 @@
 #define PIO_DSHOT_H
 
 #ifndef NUM_PIOS
-#error [pico-bidir-dshot]: The board you are trying to compile for does not have the PIO hardware. This library is only supported on RP2040/RP235x based devices. If you believe this to be an error, please file an issue. In this case, you can disable this error and try to compile anyway by going to the PIO_DShot.h file (exact location should be mentioned just before this error) and comment out this error.
+#error [Pico_Bidir_DShot]: The board you are trying to compile for does not have the PIO hardware. This library is only supported on RP2040/RP235x based devices. If you believe this message to be an error, please file an issue on GitHub. In this case, you can disable this message and try to compile anyway by going to the PIO_DShot.h file (exact location should be mentioned just before this error) and comment out this line.
 #endif
 
 #include "bidir_dshot_x1.h"
